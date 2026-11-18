@@ -1,0 +1,15 @@
+# Blueprint do Render: New > Blueprint > escolha este repositório.
+services:
+  - type: web
+    name: alertabueiro-api
+    runtime: docker
+    plan: free
+    region: ohio            # mesma região do Neon (us-east-2): ~1 ms por consulta
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL   # preencher no painel do Render (connection string pooled do Neon)
+        sync: false
+      - key: TEL_SALT       # preencher no painel do Render (mesmo valor do .env)
+        sync: false

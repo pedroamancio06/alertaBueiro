@@ -1,0 +1,15 @@
+{
+  "precisao": 0.775,
+  "recall": 0.864,
+  "f1": 0.818,
+  "map50": 0.688,
+  "map50_95": 0.288,
+  "por_classe_map50": {
+    "boca_lobo_limpa": 0.688
+  },
+  "split": "test (combinado)",
+  "datasets_publicos": [
+    "najwadatasetpart2/pothole_manhole_drain_detection (CC BY 4.0)",
+    "storm-drain/storm_drain_od-oql60 (CC BY 4.0)"
+  ]
+}

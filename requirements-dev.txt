@@ -1,0 +1,8 @@
+-r api/requirements.txt
+-r dashboard/requirements.txt
+pytest==8.3.4
+# treino/exportação local do modelo (a API em produção usa só onnxruntime)
+ultralytics==8.3.40
+onnx==1.17.0
+# opcional, só para db.load_dados setores
+# geopandas==1.0.1
