@@ -260,8 +260,15 @@ print(f"Latência média em CPU: {(time.perf_counter() - t) / len(imgs):.2f} s")
 # %%
 from google.colab import files
 
-# ONNX: formato usado pela API na nuvem (sem PyTorch, ~150 MB de RAM)
-YOLO("best.pt").export(format="onnx", imgsz=640, opset=12, simplify=False, dynamic=False)
+import os
+
+# ONNX: formato usado pela API na nuvem (sem PyTorch). Se falhar (versões novas do
+# torch no Colab pedem onnxscript), baixe só o best.pt e rode model/exportar_onnx.py no PC.
+try:
+    YOLO("best.pt").export(format="onnx", imgsz=640, opset=12, simplify=False, dynamic=False)
+except Exception as e:
+    print("Exportação ONNX falhou, faça localmente:", e)
 
 for f in ("best.pt", "best.onnx", "metrics.json", "confusion_matrix.png"):
-    files.download(f)  # salve em AlertaBueiro/model/
+    if os.path.exists(f):
+        files.download(f)  # salve em AlertaBueiro/model/
