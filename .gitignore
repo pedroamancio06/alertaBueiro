@@ -6,3 +6,6 @@ __pycache__/
 runs/
 fotos/
 *.mp4
+
+# roteiro e materiais do vídeo ficam só local
+pitch/
