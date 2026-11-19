@@ -22,3 +22,8 @@ CHUVA_REF_MM = 50.0        # normalização do fator C
 LIMIAR_ALERTA_MM = 30.0    # RF07
 ALTO_RISCO = 70            # score a partir do qual o ponto é "alto risco"
 MAX_LADO_IMG = 1280        # RNF02: reduz fotos grandes antes de guardar
+ANON_LADO = 512            # lado da cópia reduzida usada para achar rostos e placas
+
+# Threads de CPU para OpenCV e ONNX Runtime (0 = automático). No Render free a CPU
+# é uma fração de núcleo: muitas threads disputando a cota deixam tudo mais lento.
+NUM_THREADS = int(os.getenv("NUM_THREADS", "0"))

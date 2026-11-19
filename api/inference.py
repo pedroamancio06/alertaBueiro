@@ -61,7 +61,9 @@ class _ModeloOnnx:
         import onnxruntime as ort
 
         opcoes = ort.SessionOptions()
-        opcoes.intra_op_num_threads = 2
+        opcoes.intra_op_num_threads = config.NUM_THREADS or 2
+        opcoes.inter_op_num_threads = 1
+        opcoes.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
         self.sessao = ort.InferenceSession(str(caminho), opcoes, providers=["CPUExecutionProvider"])
         self.entrada = self.sessao.get_inputs()[0].name
         meta = self.sessao.get_modelmeta().custom_metadata_map

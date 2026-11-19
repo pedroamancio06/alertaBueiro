@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
@@ -77,7 +78,8 @@ def health():
     with db.conn() as c:
         c.execute("SELECT 1")
     chuva = weather.chuva_24h_mm()  # aquece o cache da previsão
-    return {"ok": True, "modelo": inference.modo_atual(), "chuva_24h_mm": round(chuva, 1)}
+    return {"ok": True, "modelo": inference.modo_atual(), "chuva_24h_mm": round(chuva, 1),
+            "cpus": os.cpu_count(), "threads": config.NUM_THREADS or "auto"}
 
 
 # ---------------------------------------------------------------- RF01-RF04

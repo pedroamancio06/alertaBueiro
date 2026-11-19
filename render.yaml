@@ -13,3 +13,5 @@ services:
         sync: false
       - key: TEL_SALT       # preencher no painel do Render (mesmo valor do .env)
         sync: false
+      - key: NUM_THREADS    # CPU fracionada no plano free: 1 thread evita estrangulamento
+        value: "1"
