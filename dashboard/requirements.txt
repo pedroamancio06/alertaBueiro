@@ -4,3 +4,4 @@ pandas==2.2.3
 pyarrow==18.1.0   # compatível com numpy 1.26 (usado pela API/ultralytics)
 requests==2.32.3
 python-dotenv==1.0.1
+pillow==11.0.0

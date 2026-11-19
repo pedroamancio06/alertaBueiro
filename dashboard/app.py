@@ -5,6 +5,7 @@ API_URL aponta para a API (local ou Render). Ver .env.example.
 """
 from __future__ import annotations
 
+import io
 import os
 
 import pandas as pd
@@ -12,6 +13,7 @@ import pydeck as pdk
 import requests
 import streamlit as st
 from dotenv import load_dotenv
+from PIL import Image
 
 load_dotenv()
 API = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
@@ -40,6 +42,24 @@ def carregar(caminho: str):
 
 def recarregar():
     carregar.clear()
+
+
+def preparar_foto(arquivo, lado: int = 1280):
+    """Reduz a foto antes do envio, como o app do celular faria. Mantém o EXIF (GPS e orientação)."""
+    raw = arquivo.getvalue()
+    try:
+        img = Image.open(io.BytesIO(raw))
+        if max(img.size) <= lado:
+            return (arquivo.name, raw, arquivo.type)
+        exif = img.info.get("exif", b"")
+        img.draft("RGB", (lado, lado))
+        img = img.convert("RGB")
+        img.thumbnail((lado, lado))
+        buf = io.BytesIO()
+        img.save(buf, "JPEG", quality=88, exif=exif)
+        return (arquivo.name.rsplit(".", 1)[0] + ".jpg", buf.getvalue(), "image/jpeg")
+    except Exception:
+        return (arquivo.name, raw, arquivo.type)  # a API valida e recusa se não for imagem
 
 
 def cor_score(s: float) -> list[int]:
@@ -152,7 +172,7 @@ with aba_relato:
             if not usar_exif:
                 dados |= {"lat": lat, "lon": lon}
             with st.spinner("Analisando foto…"):
-                r = api("POST", "/relatos", files={"foto": (foto.name, foto.getvalue(), foto.type)},
+                r = api("POST", "/relatos", files={"foto": preparar_foto(foto)},
                         data={k: v for k, v in dados.items() if v is not None})
             if r:
                 d = r["deteccao"]
@@ -187,7 +207,7 @@ with aba_os:
             if st.button("Validar", disabled=depois is None):
                 with st.spinner("Verificando desobstrução…"):
                     r = api("POST", f"/os/{os_id}/depois",
-                            files={"foto": (depois.name, depois.getvalue(), depois.type)})
+                            files={"foto": preparar_foto(depois)})
                 if r:
                     (st.success if r["validada"] else st.error)(r["mensagem"])
                     recarregar()
