@@ -54,12 +54,19 @@ def _ler_foto(foto: UploadFile) -> bytes:
 
 def _processar(raw: bytes):
     """Decodifica, anonimiza (LGPD) e roda a visão computacional."""
+    etapas = {}
+    t = time.perf_counter()
     try:
         img = privacy.decodificar(raw)
     except ValueError as e:
         raise HTTPException(400, str(e))
+    etapas["decodificar"] = round((time.perf_counter() - t) * 1000)
+    t = time.perf_counter()
     img_anon, borrados = privacy.anonimizar(img)
+    etapas["anonimizar"] = round((time.perf_counter() - t) * 1000)
     det = inference.detectar(img)  # detecção na imagem original (melhor qualidade)
+    etapas["inferencia"] = round(det.ms)
+    borrados = {**borrados, "etapas_ms": etapas}
     return img_anon, borrados, det
 
 
@@ -93,7 +100,8 @@ def criar_relato(
     img_anon, borrados, det = _processar(raw)
     if not det.detectado:
         return {"aceito": False, "motivo": "Nenhuma boca de lobo detectada na foto",
-                "deteccao": det.dict(), "anonimizacao": borrados}
+                "deteccao": det.dict(), "anonimizacao": borrados,
+                "tempo_total_ms": round((time.perf_counter() - t0) * 1000)}
     with db.conn() as c:
         res = services.registrar_relato(
             c, lat, lon, det, privacy.para_jpeg(img_anon),
